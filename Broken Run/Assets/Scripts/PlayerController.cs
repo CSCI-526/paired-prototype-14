@@ -1,52 +1,50 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
     public float moveSpeed = 5f;
     public float jumpForce = 7f;
     private Rigidbody2D rb;
-    private bool isGrounded = false;
 
+    private bool isGrounded = false;
     private bool isCrouching = false;
     public float crouchSpeedMultiplier = 0.5f; 
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        //Crouching
-        isCrouching = Input.GetKey(KeyCode.DownArrow);
-        //Left and right
-        float moveInput = Input.GetAxis("Horizontal");
+        // Crouching
+        isCrouching = Keyboard.current.downArrowKey.isPressed;
+
+        // Horizontal movement
+        float moveInput = 0f;
+        if (Keyboard.current.leftArrowKey.isPressed) moveInput = -1f;
+        if (Keyboard.current.rightArrowKey.isPressed) moveInput = 1f;
+
         float currentSpeed = isCrouching ? moveSpeed * crouchSpeedMultiplier : moveSpeed;
-        rb.velocity = new Vector2(moveInput * currentSpeed, rb.velocity.y);
+        rb.linearVelocity = new Vector2(moveInput * currentSpeed, rb.linearVelocity.y);
 
-        //jump
-        if (isGrounded && !isCrouching && Input.GetKeyDown(KeyCode.UpArrow))
+        // Jump
+        if (isGrounded && !isCrouching && Keyboard.current.upArrowKey.wasPressedThisFrame)
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
         }
-
-
     }
-        void OnCollisionEnter2D(Collision2D collision)
+
+    void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
-        {
             isGrounded = true;
-        }
     }
 
     void OnCollisionExit2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
-        {
             isGrounded = false;
-        }
     }
 }
-
-
