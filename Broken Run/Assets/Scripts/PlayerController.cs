@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
         //Left and right
         float moveInput = Input.GetAxis("Horizontal");
         float currentSpeed = isCrouching ? moveSpeed * crouchSpeedMultiplier : moveSpeed;
-        rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
+        rb.velocity = new Vector2(moveInput * currentSpeed, rb.velocity.y);
 
         //jump
         if (isGrounded && !isCrouching && Input.GetKeyDown(KeyCode.UpArrow))
