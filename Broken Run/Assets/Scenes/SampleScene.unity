@@ -555,8 +555,8 @@ MonoBehaviour:
   tilesLeft: 5
   tilesRight: 20
   tileWidth: 10
-  scrollSpeed: 10
   yPos: -4.5
+  scrollSpeed: 10
   player: {fileID: 1256906662}
 --- !u!4 &967972290
 Transform:
