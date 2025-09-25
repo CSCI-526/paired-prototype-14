@@ -714,6 +714,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   crouchSpeedMultiplier: 0.5
+  normalColor: {r: 0.745283, g: 0.36867493, b: 0.06679422, a: 1}
+  flippedColor: {r: 0.6414649, g: 0.41798684, b: 0.8773585, a: 1}
 --- !u!61 &1256906665
 BoxCollider2D:
   m_ObjectHideFlags: 0

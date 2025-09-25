@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using System.Collections;
 
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(SpriteRenderer))]
 public class PlayerController : MonoBehaviour
 {
     [Header("Movement")]
@@ -15,7 +16,12 @@ public class PlayerController : MonoBehaviour
     [Header("Crouch")]
     public float crouchSpeedMultiplier = 0.5f;
 
+    [Header("Colors")]
+    public Color normalColor = Color.white;     // ← set desired normal color in Inspector
+    public Color flippedColor = Color.red;      // ← set desired flipped color in Inspector
+
     private Rigidbody2D rb;
+    private SpriteRenderer sr;                  // ← cache SpriteRenderer
     private bool isGrounded = false;
     private bool isCrouching = false;
     private bool controlsFlipped = false;
@@ -23,8 +29,11 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        sr = GetComponent<SpriteRenderer>();    // ← grab the SpriteRenderer
         rb.gravityScale = 3f;
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+        SetPlayerColor(false);                  // start with normal color
     }
 
     void Start()
@@ -34,63 +43,61 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        // ground check
         isGrounded = Physics2D.OverlapBox(transform.position + Vector3.down * 0.6f,
                                            new Vector2(0.5f, 0.1f), 0f, groundLayer);
 
         var keyboard = Keyboard.current;
-        if (keyboard == null) return; // safety
+        if (keyboard == null) return;
 
-        // read raw hold + press inputs
+        // raw hold & press for Up/Down
         bool rawDownHold = keyboard.downArrowKey.isPressed;
         bool rawUpHold = keyboard.upArrowKey.isPressed;
         bool rawDownPressed = keyboard.downArrowKey.wasPressedThisFrame;
         bool rawUpPressed = keyboard.upArrowKey.wasPressedThisFrame;
 
-        // map crouch & jump according to flipped state:
-        // - crouch is a HOLD (isPressed)
-        // - jump is a PRESS (wasPressedThisFrame)
+        // flip mapping
         if (controlsFlipped)
-        {
-            isCrouching = rawUpHold;           // when flipped, Up becomes crouch
-        }
+            isCrouching = rawUpHold;
         else
-        {
-            isCrouching = rawDownHold;         // normal: Down is crouch
-        }
+            isCrouching = rawDownHold;
 
-        bool jumpPressed = controlsFlipped ? rawDownPressed : rawUpPressed; // when flipped, Down becomes jump
+        bool jumpPressed = controlsFlipped ? rawDownPressed : rawUpPressed;
 
-        // horizontal input (small/illusionary)
+        // horizontal input
         float moveInput = 0f;
         if (keyboard.leftArrowKey.isPressed) moveInput = -1f;
         if (keyboard.rightArrowKey.isPressed) moveInput = 1f;
-
-        // flip horizontal when needed
         if (controlsFlipped) moveInput *= -1f;
 
         float currentSpeed = isCrouching ? moveSpeed * crouchSpeedMultiplier : moveSpeed;
         float newX = Mathf.Clamp(rb.position.x + moveInput * currentSpeed * Time.deltaTime, minX, maxX);
         rb.position = new Vector2(newX, rb.position.y);
 
-        // Jump (only if grounded and not crouching)
         if (isGrounded && !isCrouching && jumpPressed)
-        {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce); // use rb.velocity
-        }
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
     }
 
     private IEnumerator FlipControlsRoutine()
     {
         while (true)
         {
-            yield return new WaitForSeconds(20f); // normal for 20s
+            yield return new WaitForSeconds(20f);
             controlsFlipped = true;
+            SetPlayerColor(true);                // ← switch to flipped color
             Debug.Log("⚠️ Controls FLIPPED");
-            yield return new WaitForSeconds(10f); // flipped for 10s
+
+            yield return new WaitForSeconds(10f);
             controlsFlipped = false;
+            SetPlayerColor(false);               // ← back to normal color
             Debug.Log("✅ Controls NORMAL");
         }
+    }
+
+    // Change sprite color based on state
+    private void SetPlayerColor(bool flipped)
+    {
+        if (sr != null)
+            sr.color = flipped ? flippedColor : normalColor;
     }
 
     private void OnDrawGizmos()
