@@ -15,6 +15,9 @@ public class EndlessGround : MonoBehaviour
     [Header("Player")]
     public Transform player;
 
+    [Header("Killer")]
+    public GameObject killerPrefab;   // Assign killer prefab here
+
     [HideInInspector]
     public Transform[] groundTiles;
 
@@ -22,21 +25,35 @@ public class EndlessGround : MonoBehaviour
     private float startX = -12.2f;
     private float leftBoundary = -30f;
 
-    void Start()
+void Start()
+{
+    totalTiles = tilesLeft + tilesRight;
+    groundTiles = new Transform[totalTiles];
+
+    // Spawn ground tiles
+    for (int i = 0; i < totalTiles; i++)
     {
-        totalTiles = tilesLeft + tilesRight;
-        groundTiles = new Transform[totalTiles];
-
-        for (int i = 0; i < totalTiles; i++)
-        {
-            SpawnTile(i, startX + (i - tilesLeft) * tileWidth);
-        }
-
-        // Place player on first tile
-        player.position = new Vector3(startX + tileWidth / 2f, yPos + 1f, 0);
-        var pc = player.GetComponent<PlayerController>();
-        if (pc != null) pc.minX = startX;
+        SpawnTile(i, startX + (i - tilesLeft) * tileWidth);
     }
+
+    // Place player on first tile
+    player.position = new Vector3(startX + tileWidth / 2f, yPos + 1f, 0);
+    var pc = player.GetComponent<PlayerController>();
+    if (pc != null) pc.minX = startX;
+
+    // Spawn **only one** killer
+    if (killerPrefab != null)
+    {
+        // Make sure no other killer exists
+        if (GameObject.FindGameObjectWithTag("Killer") == null)
+        {
+            GameObject killerObj = Instantiate(killerPrefab);
+            // KillerController kc = killerObj.GetComponent<KillerController>();
+            // if (kc != null) kc.player = player;
+        }
+    }
+}
+
 
     void Update()
     {
@@ -67,7 +84,6 @@ public class EndlessGround : MonoBehaviour
         if (prefab == null) return;
 
         GameObject tile = Instantiate(prefab, new Vector3(xPos, yPos, 0), Quaternion.identity);
-
         groundTiles[index] = tile.transform;
     }
 }
