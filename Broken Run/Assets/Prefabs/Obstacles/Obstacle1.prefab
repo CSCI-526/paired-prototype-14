@@ -12,9 +12,10 @@ GameObject:
   - component: {fileID: 6317124945825601712}
   - component: {fileID: 307498389386995926}
   - component: {fileID: 7835653428912628856}
+  - component: {fileID: 6373224823087185756}
   m_Layer: 0
   m_Name: Obstacle1
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -165,3 +166,16 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &6373224823087185756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 342965573824974066}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16a69f81ca696460bbe6a06b79fab51e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ObstacleCollision
+  explosionPrefab: {fileID: 3602895421638106805, guid: a492921cc88f0490b93f89be14764c83, type: 3}
