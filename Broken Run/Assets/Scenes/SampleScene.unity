@@ -273,9 +273,6 @@ MonoBehaviour:
   killer: {fileID: 1574919660}
   smoothSpeed: 0.125
   offset: {x: 0, y: 2, z: -10}
-  minSize: 5
-  maxSize: 10
-  zoomLimiter: 10
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -601,7 +598,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   moveSpeed: 5
   jumpForce: 13
-  minX: 0
+  minX: -1
   maxX: 1
   groundLayer:
     serializedVersion: 2
