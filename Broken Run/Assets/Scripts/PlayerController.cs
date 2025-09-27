@@ -70,8 +70,7 @@ public class PlayerController : MonoBehaviour
         if (controlsFlipped) moveInput *= -1f;
 
         float currentSpeed = isCrouching ? moveSpeed * crouchSpeedMultiplier : moveSpeed;
-        float newX = Mathf.Clamp(rb.position.x + moveInput * currentSpeed * Time.deltaTime, minX, maxX);
-        rb.position = new Vector2(newX, rb.position.y);
+        rb.position += new Vector2(moveInput * currentSpeed * Time.deltaTime, 0f);
 
         if (isGrounded && !isCrouching && jumpPressed)
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
@@ -84,7 +83,7 @@ public class PlayerController : MonoBehaviour
             yield return new WaitForSeconds(20f);
             controlsFlipped = true;
             SetPlayerColor(true);                // ← switch to flipped color
-            Debug.Log("⚠️ Controls FLIPPED");
+            Debug.Log("⚠ Controls FLIPPED");
 
             yield return new WaitForSeconds(10f);
             controlsFlipped = false;

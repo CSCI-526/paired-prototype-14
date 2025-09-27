@@ -38,8 +38,8 @@ void Start()
 
     // Place player on first tile
     player.position = new Vector3(startX + tileWidth / 2f, yPos + 1f, 0);
-    var pc = player.GetComponent<PlayerController>();
-    if (pc != null) pc.minX = startX;
+    // var pc = player.GetComponent<PlayerController>();
+    // if (pc != null) pc.minX = startX;
 
     // Spawn **only one** killer
     if (killerPrefab != null)
