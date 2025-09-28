@@ -39,26 +39,31 @@ public class KillerController : MonoBehaviour
     }
 
     void OnTriggerEnter2D(Collider2D other)
+{
+    if (other.CompareTag("Player"))
     {
-        // ---- Player touches Killer -> Game Over ----
-        if (other.CompareTag("Player"))
-        {
-            Debug.Log("Game Over! Player touched the killer!");
-            Time.timeScale = 0f;
-            return;
-        }
+        Debug.Log("Game Over! Player touched the killer!");
 
-        // ---- Obstacle touches Killer -> Burst & destroy ----
-        if (other.CompareTag("Obstacle"))
-        {
-            // spawn particle effect at obstacle position
-            if (explosionPrefab != null)
-            {
-                GameObject fx = Instantiate(explosionPrefab, other.transform.position, Quaternion.identity);
-                Destroy(fx, 2f); // auto-destroy the particles after 2 seconds
-            }
+        
+        ScoreManager.Instance.GameOver();
 
-            Destroy(other.gameObject); // remove the obstacle
-        }
+        
+        FindObjectOfType<GameOverUI>().ShowGameOver();
+
+        
+        Time.timeScale = 0f;
+        return;
     }
+
+    if (other.CompareTag("Obstacle"))
+    {
+        if (explosionPrefab != null)
+        {
+            GameObject fx = Instantiate(explosionPrefab, other.transform.position, Quaternion.identity);
+            Destroy(fx, 2f);
+        }
+        Destroy(other.gameObject);
+    }
+}
+
 }
