@@ -46,6 +46,19 @@ public class ObstacleSpawner : MonoBehaviour
         Vector3 spawnPos = new Vector3(spawnX, tileToSpawnOn.position.y + 0.5f, 0);
         GameObject obstacle = Instantiate(prefab, spawnPos, Quaternion.identity);
 
+
+        //coin
+        if (groundManager.coinPrefab != null && Random.value < 1f)
+        {
+            Vector3 coinPos = obstacle.transform.position + Vector3.up * 2.5f;
+            GameObject coin = Instantiate(groundManager.coinPrefab, coinPos, Quaternion.identity);
+
+       
+            coin.transform.SetParent(obstacle.transform);
+        }
+
+
+
         Rigidbody2D rb = obstacle.GetComponent<Rigidbody2D>();
         if (rb == null) rb = obstacle.AddComponent<Rigidbody2D>();
         rb.bodyType = RigidbodyType2D.Kinematic;

@@ -18,6 +18,9 @@ public class EndlessGround : MonoBehaviour
     [Header("Killer")]
     public GameObject killerPrefab;   // Assign killer prefab here
 
+    [Header("Collectibles")]
+    public GameObject coinPrefab; 
+
     [HideInInspector]
     public Transform[] groundTiles;
 
@@ -85,5 +88,12 @@ void Start()
 
         GameObject tile = Instantiate(prefab, new Vector3(xPos, yPos, 0), Quaternion.identity);
         groundTiles[index] = tile.transform;
+
+        if (coinPrefab != null && Random.value < 0.5f)
+        {
+            Vector3 spawnPos = new Vector3(xPos, yPos + 1.5f, 0);
+            Instantiate(coinPrefab, spawnPos, Quaternion.identity);
+        }
     }
+
 }

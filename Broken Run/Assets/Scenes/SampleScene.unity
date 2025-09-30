@@ -533,7 +533,7 @@ MonoBehaviour:
   - 'High score tip: Stay calm and time your jumps!'
   - Practice makes perfect. Keep trying!
   - "Watch out for the Killer, don\u2019t get too close!"
-  tipInterval: 8
+  tipInterval: 1
   fadeDuration: 1
   showDuration: 3
   initialDelay: 4
@@ -1316,9 +1316,10 @@ MonoBehaviour:
   tilesRight: 20
   tileWidth: 10
   yPos: -4.5
-  scrollSpeed: 10
+  scrollSpeed: 5
   player: {fileID: 1256906662}
-  killerPrefab: {fileID: 1574919655}
+  killerPrefab: {fileID: 0}
+  coinPrefab: {fileID: 3678452837041661345, guid: 270950957637a3d45a4abd2f44a0fabf, type: 3}
   groundTiles: []
 --- !u!4 &967972290
 Transform:

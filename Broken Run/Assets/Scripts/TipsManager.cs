@@ -19,7 +19,7 @@ public class TipsManager : MonoBehaviour
         "Watch out for the Killer, don’t get too close!"
     };
 
-    public float tipInterval = 5f;     
+    public float tipInterval = 3f;     
     public float fadeDuration = 1f;    
     public float showDuration = 3f;    
     public float initialDelay = 4f;    

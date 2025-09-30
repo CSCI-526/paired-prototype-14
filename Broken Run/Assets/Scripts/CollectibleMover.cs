@@ -1,26 +1,25 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class ObstacleMover : MonoBehaviour
+public class CollectibleMover : MonoBehaviour
 {
-    public float speed = 5f;        // match ground scroll speed
-    public float despawnX = -20f;   // when to destroy obstacle
-    public GameObject coinPrefab; 
+    public float speed = 5f;       
+    public float despawnX = -20f;  
 
     private Rigidbody2D rb;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        rb.bodyType = RigidbodyType2D.Kinematic; // Prevents pushing player
+        rb.bodyType = RigidbodyType2D.Kinematic; 
     }
 
     void FixedUpdate()
     {
-        // Move left using physics-safe method
+        
         rb.MovePosition(rb.position + Vector2.left * speed * Time.fixedDeltaTime);
 
-        // Destroy if out of screen
+        
         if (rb.position.x < despawnX)
         {
             Destroy(gameObject);

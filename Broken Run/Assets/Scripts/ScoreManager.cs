@@ -74,4 +74,13 @@ public class ScoreManager : MonoBehaviour
         }
         return topScores;
     }
+
+    public void AddScore(int amount)
+{
+    if (isGameOver) return;
+
+    score += amount;
+    scoreText.text = $"Score: {Mathf.FloorToInt(score)}";
+}
+
 }
