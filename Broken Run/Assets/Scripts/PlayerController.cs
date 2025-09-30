@@ -26,6 +26,10 @@ public class PlayerController : MonoBehaviour
     private bool isCrouching = false;
     private bool controlsFlipped = false;
 
+    [Header("Power-Ups")]
+    public bool hasShield = false;
+    public float shieldBounceForce = 6f;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();

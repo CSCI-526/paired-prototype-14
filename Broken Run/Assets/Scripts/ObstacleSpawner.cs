@@ -2,9 +2,18 @@ using UnityEngine;
 
 public class ObstacleSpawner : MonoBehaviour
 {
+    [Header("Obstacles")]
     public GameObject[] obstaclePrefabs;
+
+    [Header("Shield Power-Up")]
+    public GameObject shieldPrefab;        // Drag your Shield prefab here
+    [Range(0f, 1f)] public float shieldSpawnChance = 0.1f; // 10% chance per spawn
+
+    [Header("References")]
     public Transform player;
     public EndlessGround groundManager;
+
+    [Header("Spawn Settings")]
     public float spawnDistance = 20f;
     public float spawnInterval = 2f;
 
@@ -16,18 +25,31 @@ public class ObstacleSpawner : MonoBehaviour
         if (timer >= spawnInterval)
         {
             timer = 0f;
-            SpawnObstacle();
+            SpawnObject();
         }
     }
 
-    void SpawnObstacle()
+    void SpawnObject()
     {
-        GameObject prefab = obstaclePrefabs[Random.Range(0, obstaclePrefabs.Length)];
-        if (prefab == null) return;
+        GameObject prefabToSpawn = null;
+        bool isShield = false;
+
+        // Decide: spawn shield or obstacle
+        if (Random.value < shieldSpawnChance && shieldPrefab != null)
+        {
+            prefabToSpawn = shieldPrefab;
+            isShield = true;
+        }
+        else
+        {
+            prefabToSpawn = obstaclePrefabs[Random.Range(0, obstaclePrefabs.Length)];
+        }
+
+        if (prefabToSpawn == null) return;
 
         float spawnX = player.position.x + spawnDistance;
 
-        // Find a tile under spawnX to place the obstacle
+        // Find ground tile under spawnX
         Transform tileToSpawnOn = null;
         foreach (var tile in groundManager.groundTiles)
         {
@@ -43,28 +65,36 @@ public class ObstacleSpawner : MonoBehaviour
 
         if (tileToSpawnOn == null) return;
 
-        Vector3 spawnPos = new Vector3(spawnX, tileToSpawnOn.position.y + 0.5f, 0);
-        GameObject obstacle = Instantiate(prefab, spawnPos, Quaternion.identity);
+        Vector3 spawnPos;
 
-
-        //coin
-        if (groundManager.coinPrefab != null && Random.value < 1f)
+        if (isShield)
         {
-            Vector3 coinPos = obstacle.transform.position + Vector3.up * 2.5f;
-            GameObject coin = Instantiate(groundManager.coinPrefab, coinPos, Quaternion.identity);
-
-       
-            coin.transform.SetParent(obstacle.transform);
+            // Spawn shield near player's Y position (~3.8)
+            spawnPos = new Vector3(spawnX, player.position.y + Random.Range(-0.5f, 0.5f), 0);
+        }
+        else
+        {
+            // Spawn obstacle slightly above ground
+            spawnPos = new Vector3(spawnX, tileToSpawnOn.position.y + 0.5f, 0);
         }
 
+        GameObject obj = Instantiate(prefabToSpawn, spawnPos, Quaternion.identity);
 
-
-        Rigidbody2D rb = obstacle.GetComponent<Rigidbody2D>();
-        if (rb == null) rb = obstacle.AddComponent<Rigidbody2D>();
+        // Attach mover so shield & obstacles scroll with ground
+        Rigidbody2D rb = obj.GetComponent<Rigidbody2D>();
+        if (rb == null) rb = obj.AddComponent<Rigidbody2D>();
         rb.bodyType = RigidbodyType2D.Kinematic;
 
-        ObstacleMover mover = obstacle.AddComponent<ObstacleMover>();
+        ObstacleMover mover = obj.AddComponent<ObstacleMover>();
         mover.speed = groundManager.scrollSpeed;
         mover.despawnX = player.position.x - 20f;
+
+        // Example: attach coin above obstacles only
+        if (!isShield && groundManager.coinPrefab != null && Random.value < 1f)
+        {
+            Vector3 coinPos = obj.transform.position + Vector3.up * 2.5f;
+            GameObject coin = Instantiate(groundManager.coinPrefab, coinPos, Quaternion.identity);
+            coin.transform.SetParent(obj.transform);
+        }
     }
 }
