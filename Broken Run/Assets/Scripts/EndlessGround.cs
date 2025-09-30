@@ -82,18 +82,22 @@ void Start()
     }
 
     void SpawnTile(int index, float xPos)
+{
+    GameObject prefab = tilePrefabs[Random.Range(0, tilePrefabs.Length)];
+    if (prefab == null) return;
+
+    GameObject tile = Instantiate(prefab, new Vector3(xPos, yPos, 0), Quaternion.identity);
+    groundTiles[index] = tile.transform;
+
+    // 30%
+    if (coinPrefab != null && Random.value < 0.3f)
     {
-        GameObject prefab = tilePrefabs[Random.Range(0, tilePrefabs.Length)];
-        if (prefab == null) return;
+        Vector3 spawnPos = new Vector3(xPos, yPos + 1.5f, 0);
+        GameObject coin = Instantiate(coinPrefab, spawnPos, Quaternion.identity);
 
-        GameObject tile = Instantiate(prefab, new Vector3(xPos, yPos, 0), Quaternion.identity);
-        groundTiles[index] = tile.transform;
-
-        if (coinPrefab != null && Random.value < 0.5f)
-        {
-            Vector3 spawnPos = new Vector3(xPos, yPos + 1.5f, 0);
-            Instantiate(coinPrefab, spawnPos, Quaternion.identity);
-        }
+       
+        coin.transform.SetParent(tile.transform);
     }
+}
 
 }

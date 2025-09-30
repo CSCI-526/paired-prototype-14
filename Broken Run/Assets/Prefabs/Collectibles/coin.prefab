@@ -151,4 +151,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Collectible
   scoreValue: 50
-  collectEffect: {fileID: 3602895421638106805, guid: a492921cc88f0490b93f89be14764c83, type: 3}
+  collectEffect: {fileID: 2883797502249945402, guid: 1e54877675f6e4a46ad7ca7c4d7a5bf6, type: 3}

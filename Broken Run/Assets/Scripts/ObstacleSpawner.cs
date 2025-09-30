@@ -90,7 +90,7 @@ public class ObstacleSpawner : MonoBehaviour
         mover.despawnX = player.position.x - 20f;
 
         // Example: attach coin above obstacles only
-        if (!isShield && groundManager.coinPrefab != null && Random.value < 1f)
+        if (!isShield && groundManager.coinPrefab != null && Random.value < 0.5f)
         {
             Vector3 coinPos = obj.transform.position + Vector3.up * 2.5f;
             GameObject coin = Instantiate(groundManager.coinPrefab, coinPos, Quaternion.identity);
