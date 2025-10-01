@@ -9,12 +9,14 @@ public class KillerController : MonoBehaviour
 
     [Header("Oscillation Settings")]
     public float oscillationAmplitude = 0.3f;
-    public float oscillationSpeed = 0.628f;
+    public float oscillationSpeed = 0.628f; // radians/sec
 
     [Header("Explosion Effect")]
     public GameObject explosionPrefab;
 
     private float startTime;
+    private BoxCollider2D solidCollider;
+    private BoxCollider2D triggerCollider;
 
     void Start()
     {
@@ -23,10 +25,15 @@ public class KillerController : MonoBehaviour
         transform.position = new Vector3(spawnX, groundY + 1.5f, 0);
         transform.localScale = new Vector3(1f, 3f, 1f);
 
-        // Collider is NOT a trigger now → solid wall
-        BoxCollider2D col = GetComponent<BoxCollider2D>();
-        col.isTrigger = false;
+        // --- Solid collider for player collisions ---
+        solidCollider = gameObject.AddComponent<BoxCollider2D>();
+        solidCollider.isTrigger = false;
 
+        // --- Separate trigger collider for obstacle detection ---
+        triggerCollider = gameObject.AddComponent<BoxCollider2D>();
+        triggerCollider.isTrigger = true;
+
+        // Kinematic Rigidbody2D for manual movement
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
         if (rb == null) rb = gameObject.AddComponent<Rigidbody2D>();
         rb.bodyType = RigidbodyType2D.Kinematic;
@@ -36,26 +43,28 @@ public class KillerController : MonoBehaviour
 
     void Update()
     {
+        // Oscillate horizontally
         float offset = Mathf.Sin((Time.time - startTime) * oscillationSpeed) * oscillationAmplitude;
         transform.position = new Vector3(spawnX + offset, groundY + 1.5f, 0);
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
+        // --- Player collision ---
         if (collision.collider.CompareTag("Player"))
         {
             PlayerController pc = collision.collider.GetComponent<PlayerController>();
-            if (pc != null && pc.hasShield)
-            {
-                // Bounce instead of passing through
-                Rigidbody2D prb = pc.GetComponent<Rigidbody2D>();
-                if (prb != null)
-                {
-                    prb.linearVelocity = new Vector2(prb.linearVelocity.x, pc.shieldBounceForce);
-                }
+            Rigidbody2D prb = collision.collider.GetComponent<Rigidbody2D>();
 
-                pc.hasShield = false; // consume shield
-                Debug.Log("Shield absorbed the hit! Player bounced.");
+            if (pc != null && pc.hasShield && prb != null)
+            {
+                // Strong upward bounce
+                Vector2 bounce = new Vector2(0f, pc.shieldBounceForce * 2f);
+                prb.linearVelocity = Vector2.zero;
+                prb.AddForce(bounce, ForceMode2D.Impulse);
+
+                pc.hasShield = false;
+                Debug.Log("Shield absorbed the hit! Player bounced!");
             }
             else
             {
@@ -65,15 +74,19 @@ public class KillerController : MonoBehaviour
                 Time.timeScale = 0f;
             }
         }
+    }
 
-        if (collision.collider.CompareTag("Obstacle"))
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        // --- Obstacle trigger ---
+        if (other.CompareTag("Obstacle"))
         {
             if (explosionPrefab != null)
             {
-                GameObject fx = Instantiate(explosionPrefab, collision.transform.position, Quaternion.identity);
+                GameObject fx = Instantiate(explosionPrefab, other.transform.position, Quaternion.identity);
                 Destroy(fx, 2f);
             }
-            Destroy(collision.gameObject);
+            Destroy(other.gameObject);
         }
     }
 }
