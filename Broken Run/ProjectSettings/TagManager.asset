@@ -8,6 +8,7 @@ TagManager:
   - Killer
   - Obstacle
   - PowerUp
+  - Spike
   layers:
   - Default
   - TransparentFX

@@ -6,19 +6,26 @@ public class ObstacleCollision : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        // ✅ Only react if the object that hit this obstacle is the Killer
+        // ✅ Killer hits obstacle → spawn explosion + destroy
         if (collision.collider.CompareTag("Killer"))
         {
-            // spawn particle burst at this obstacle's position
             if (explosionPrefab != null)
             {
                 Instantiate(explosionPrefab, transform.position, Quaternion.identity);
             }
 
-            // destroy the obstacle
             Destroy(gameObject);
+            return;
         }
 
-        // ❌ If Player touches, do nothing
+        // ✅ Player touches Spike → take 25 damage
+        if (collision.collider.CompareTag("Player") && gameObject.CompareTag("Spike"))
+        {
+            PlayerController player = collision.collider.GetComponent<PlayerController>();
+            if (player != null)
+            {
+                player.TakeDamage(25f);
+            }
+        }
     }
 }

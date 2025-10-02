@@ -76,7 +76,7 @@ public class KillerController : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Obstacle") )
+        if (other.CompareTag("Obstacle") || other.CompareTag("Spike") )
         {
             if (explosionPrefab != null)
             {
@@ -87,3 +87,4 @@ public class KillerController : MonoBehaviour
         }
     }
 }
+
