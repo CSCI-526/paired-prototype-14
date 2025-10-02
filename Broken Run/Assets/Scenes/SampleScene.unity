@@ -1130,7 +1130,7 @@ MonoBehaviour:
   - {fileID: 342965573824974066, guid: 21e217d43f0800e459efbc124bf617bb, type: 3}
   - {fileID: 2974635967670695261, guid: 32437f59b3a23344d901dc6e7b758a11, type: 3}
   shieldPrefab: {fileID: 1313701721711133424, guid: fb1902486d0f640f28b5a639bd305041, type: 3}
-  shieldSpawnChance: 0.1
+  shieldSpawnChance: 0.23
   player: {fileID: 1256906662}
   groundManager: {fileID: 967972289}
   spawnDistance: 20
