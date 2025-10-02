@@ -53,33 +53,48 @@ public class PlayerController : MonoBehaviour
         if (healthBar != null) healthBar.ResetHealth();
     }
 
-    void Update()
-    {
-        isGrounded = Physics2D.OverlapBox(transform.position + Vector3.down * 0.6f,
-                                           new Vector2(0.5f, 0.1f), 0f, groundLayer);
+void Update()
+{
+    // Check if player is grounded
+    isGrounded = Physics2D.OverlapBox(transform.position + Vector3.down * 0.6f,
+                                       new Vector2(0.5f, 0.1f), 0f, groundLayer);
 
-        var keyboard = Keyboard.current;
-        if (keyboard == null) return;
+    var keyboard = Keyboard.current;
+    if (keyboard == null) return;
 
-        bool rawDownHold = keyboard.downArrowKey.isPressed;
-        bool rawUpHold = keyboard.upArrowKey.isPressed;
-        bool rawDownPressed = keyboard.downArrowKey.wasPressedThisFrame;
-        bool rawUpPressed = keyboard.upArrowKey.wasPressedThisFrame;
+    // Arrow keys
+    bool rawDownHold = keyboard.downArrowKey.isPressed;
+    bool rawUpHold = keyboard.upArrowKey.isPressed;
+    bool rawDownPressed = keyboard.downArrowKey.wasPressedThisFrame;
+    bool rawUpPressed = keyboard.upArrowKey.wasPressedThisFrame;
 
-        isCrouching = controlsFlipped ? rawUpHold : rawDownHold;
-        bool jumpPressed = controlsFlipped ? rawDownPressed : rawUpPressed;
+    // WASD keys
+    bool wHold = keyboard.wKey.isPressed;
+    bool sHold = keyboard.sKey.isPressed;
+    bool wPressed = keyboard.wKey.wasPressedThisFrame;
+    bool sPressed = keyboard.sKey.wasPressedThisFrame;
+    bool aHold = keyboard.aKey.isPressed;
+    bool dHold = keyboard.dKey.isPressed;
 
-        float moveInput = 0f;
-        if (keyboard.leftArrowKey.isPressed) moveInput = -1f;
-        if (keyboard.rightArrowKey.isPressed) moveInput = 1f;
-        if (controlsFlipped) moveInput *= -1f;
+    // Determine crouch and jump (supporting both arrow keys and WASD)
+    isCrouching = controlsFlipped ? (rawUpHold || wHold) : (rawDownHold || sHold);
+    bool jumpPressed = controlsFlipped ? (rawDownPressed || sPressed) : (rawUpPressed || wPressed);
 
-        float currentSpeed = isCrouching ? moveSpeed * crouchSpeedMultiplier : moveSpeed;
-        rb.position += new Vector2(moveInput * currentSpeed * Time.deltaTime, 0f);
+    // Horizontal movement
+    float moveInput = 0f;
+    if (keyboard.leftArrowKey.isPressed || aHold) moveInput = -1f;
+    if (keyboard.rightArrowKey.isPressed || dHold) moveInput = 1f;
+    if (controlsFlipped) moveInput *= -1f;
 
-        if (isGrounded && !isCrouching && jumpPressed)
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-    }
+    // Apply movement
+    float currentSpeed = isCrouching ? moveSpeed * crouchSpeedMultiplier : moveSpeed;
+    rb.position += new Vector2(moveInput * currentSpeed * Time.deltaTime, 0f);
+
+    // Jump
+    if (isGrounded && !isCrouching && jumpPressed)
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+}
+
 
     private IEnumerator FlipControlsRoutine()
     {
