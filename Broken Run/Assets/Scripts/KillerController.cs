@@ -9,7 +9,7 @@ public class KillerController : MonoBehaviour
 
     [Header("Oscillation Settings")]
     public float oscillationAmplitude = 0.3f;
-    public float oscillationSpeed = 0.628f; // radians/sec
+    public float oscillationSpeed = 0.628f;
 
     [Header("Explosion Effect")]
     public GameObject explosionPrefab;
@@ -21,19 +21,15 @@ public class KillerController : MonoBehaviour
     void Start()
     {
         startTime = Time.time;
-
         transform.position = new Vector3(spawnX, groundY + 1.5f, 0);
         transform.localScale = new Vector3(1f, 3f, 1f);
 
-        // --- Solid collider for player collisions ---
         solidCollider = gameObject.AddComponent<BoxCollider2D>();
         solidCollider.isTrigger = false;
 
-        // --- Separate trigger collider for obstacle detection ---
         triggerCollider = gameObject.AddComponent<BoxCollider2D>();
         triggerCollider.isTrigger = true;
 
-        // Kinematic Rigidbody2D for manual movement
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
         if (rb == null) rb = gameObject.AddComponent<Rigidbody2D>();
         rb.bodyType = RigidbodyType2D.Kinematic;
@@ -43,14 +39,12 @@ public class KillerController : MonoBehaviour
 
     void Update()
     {
-        // Oscillate horizontally
         float offset = Mathf.Sin((Time.time - startTime) * oscillationSpeed) * oscillationAmplitude;
         transform.position = new Vector3(spawnX + offset, groundY + 1.5f, 0);
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        // --- Player collision ---
         if (collision.collider.CompareTag("Player"))
         {
             PlayerController pc = collision.collider.GetComponent<PlayerController>();
@@ -58,7 +52,6 @@ public class KillerController : MonoBehaviour
 
             if (pc != null && pc.hasShield && prb != null)
             {
-                // Strong upward bounce
                 Vector2 bounce = new Vector2(0f, pc.shieldBounceForce * 2f);
                 prb.linearVelocity = Vector2.zero;
                 prb.AddForce(bounce, ForceMode2D.Impulse);
@@ -69,6 +62,11 @@ public class KillerController : MonoBehaviour
             else
             {
                 Debug.Log("Game Over! Player touched the killer!");
+
+                // Set health bar to zero
+                if (pc != null && pc.healthBar != null)
+                    pc.healthBar.SetHealth(0f);
+
                 ScoreManager.Instance.GameOver();
                 FindObjectOfType<GameOverUI>().ShowGameOver();
                 Time.timeScale = 0f;
@@ -78,8 +76,7 @@ public class KillerController : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        // --- Obstacle trigger ---
-        if (other.CompareTag("Obstacle"))
+        if (other.CompareTag("Obstacle") )
         {
             if (explosionPrefab != null)
             {

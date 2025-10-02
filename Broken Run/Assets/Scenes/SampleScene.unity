@@ -1748,6 +1748,7 @@ MonoBehaviour:
   flippedColor: {r: 0.7735849, g: 0.14231044, b: 0.7601196, a: 1}
   hasShield: 0
   shieldBounceForce: 6
+  healthBar: {fileID: 1837687999}
 --- !u!61 &1256906665
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2822,6 +2823,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1837687997}
   - component: {fileID: 1837687998}
+  - component: {fileID: 1837687999}
   m_Layer: 5
   m_Name: HealthBar
   m_TagString: Untagged
@@ -2903,6 +2905,20 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1837687999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1837687996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a0d20805f67a4054804c1ad0b3a0968, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HealthBar
+  healthSlider: {fileID: 1837687998}
+  healthText: {fileID: 0}
 --- !u!1 &1883342132
 GameObject:
   m_ObjectHideFlags: 0

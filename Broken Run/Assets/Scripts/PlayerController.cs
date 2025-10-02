@@ -17,32 +17,36 @@ public class PlayerController : MonoBehaviour
     public float crouchSpeedMultiplier = 0.5f;
 
     [Header("Colors")]
-    public Color normalColor = Color.white;     // ← set desired normal color in Inspector
-    public Color flippedColor = Color.red;      // ← set desired flipped color in Inspector
-
-    private Rigidbody2D rb;
-    private SpriteRenderer sr;                  // ← cache SpriteRenderer
-    private bool isGrounded = false;
-    private bool isCrouching = false;
-    private bool controlsFlipped = false;
+    public Color normalColor = Color.white;
+    public Color flippedColor = Color.red;
 
     [Header("Power-Ups")]
     public bool hasShield = false;
     public float shieldBounceForce = 6f;
 
+    [Header("UI")]
+    public HealthBar healthBar;  // Reference to HealthBar
+
+    private Rigidbody2D rb;
+    private SpriteRenderer sr;
+    private bool isGrounded = false;
+    private bool isCrouching = false;
+    private bool controlsFlipped = false;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        sr = GetComponent<SpriteRenderer>();    // ← grab the SpriteRenderer
+        sr = GetComponent<SpriteRenderer>();
         rb.gravityScale = 3f;
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
 
-        SetPlayerColor(false);                  // start with normal color
+        SetPlayerColor(false);
     }
 
     void Start()
     {
         StartCoroutine(FlipControlsRoutine());
+        if (healthBar != null) healthBar.ResetHealth();
     }
 
     void Update()
@@ -53,21 +57,14 @@ public class PlayerController : MonoBehaviour
         var keyboard = Keyboard.current;
         if (keyboard == null) return;
 
-        // raw hold & press for Up/Down
         bool rawDownHold = keyboard.downArrowKey.isPressed;
         bool rawUpHold = keyboard.upArrowKey.isPressed;
         bool rawDownPressed = keyboard.downArrowKey.wasPressedThisFrame;
         bool rawUpPressed = keyboard.upArrowKey.wasPressedThisFrame;
 
-        // flip mapping
-        if (controlsFlipped)
-            isCrouching = rawUpHold;
-        else
-            isCrouching = rawDownHold;
-
+        isCrouching = controlsFlipped ? rawUpHold : rawDownHold;
         bool jumpPressed = controlsFlipped ? rawDownPressed : rawUpPressed;
 
-        // horizontal input
         float moveInput = 0f;
         if (keyboard.leftArrowKey.isPressed) moveInput = -1f;
         if (keyboard.rightArrowKey.isPressed) moveInput = 1f;
@@ -86,17 +83,35 @@ public class PlayerController : MonoBehaviour
         {
             yield return new WaitForSeconds(20f);
             controlsFlipped = true;
-            SetPlayerColor(true);                // ← switch to flipped color
+            SetPlayerColor(true);
             Debug.Log("⚠ Controls FLIPPED");
 
             yield return new WaitForSeconds(10f);
             controlsFlipped = false;
-            SetPlayerColor(false);               // ← back to normal color
+            SetPlayerColor(false);
             Debug.Log("✅ Controls NORMAL");
         }
     }
 
-    // Change sprite color based on state
+    public void TakeDamage(float amount)
+{
+    if (healthBar == null) return;
+
+    float newHealth = healthBar.healthSlider.value - amount;
+    healthBar.SetHealth(newHealth);
+
+    Debug.Log($"Player took {amount} damage. New health: {newHealth}");
+
+    if (newHealth <= 0)
+    {
+        Debug.Log("💀 Player died!");
+        ScoreManager.Instance.GameOver();
+        FindObjectOfType<GameOverUI>().ShowGameOver();
+        Time.timeScale = 0f;
+    }
+}
+
+
     private void SetPlayerColor(bool flipped)
     {
         if (sr != null)
