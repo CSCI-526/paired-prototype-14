@@ -27,6 +27,10 @@ public class PlayerController : MonoBehaviour
     [Header("UI")]
     public HealthBar healthBar;  // Reference to HealthBar
 
+    [Header("Damage")]
+    public float damageCooldown = 0.5f;   // time between damage instances
+    private float lastDamageTime = -999f;
+
     private Rigidbody2D rb;
     private SpriteRenderer sr;
     private bool isGrounded = false;
@@ -111,6 +115,16 @@ public class PlayerController : MonoBehaviour
     }
 }
 
+
+    public bool CanTakeDamage()
+{
+    return Time.time - lastDamageTime >= damageCooldown;
+}
+
+    public void RegisterDamageTime()
+{
+    lastDamageTime = Time.time;
+}
 
     private void SetPlayerColor(bool flipped)
     {

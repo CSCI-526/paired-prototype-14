@@ -2,23 +2,22 @@ using UnityEngine;
 
 public class ObstacleCollision : MonoBehaviour
 {
-    public GameObject explosionPrefab; // assign your particle effect prefab here
-    public float bounceForceX = 12f;   // horizontal knockback to the right
-    public float bounceForceY = 8f;    // vertical knockback
+    public GameObject explosionPrefab;
+    public float bounceForceX = 12f;
+    public float bounceForceY = 8f;
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        // ✅ Killer hits obstacle → spawn explosion + destroy
+        // Killer collision
         if (collision.collider.CompareTag("Killer"))
         {
             if (explosionPrefab != null)
                 Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-
             Destroy(gameObject);
             return;
         }
 
-        // ✅ Player touches Spike → bounce logic
+        // Spike collision
         if (collision.collider.CompareTag("Player") && gameObject.CompareTag("Spike"))
         {
             PlayerController player = collision.collider.GetComponent<PlayerController>();
@@ -29,16 +28,20 @@ public class ObstacleCollision : MonoBehaviour
                 // Always bounce to the right
                 rb.linearVelocity = new Vector2(bounceForceX, bounceForceY);
 
-                if (player.hasShield)
+                // ✅ Prevent multiple damage hits in quick succession
+                if (player.CanTakeDamage())
                 {
-                    // Shield absorbs spike, no damage
-                    player.hasShield = false;
-                    Debug.Log("🛡 Shield absorbed spike! No damage taken.");
-                }
-                else
-                {
-                    // No shield → take damage
-                    player.TakeDamage(25f);
+                    if (player.hasShield)
+                    {
+                        player.hasShield = false;
+                        Debug.Log("🛡 Shield absorbed spike! No damage taken.");
+                    }
+                    else
+                    {
+                        player.TakeDamage(25f);
+                    }
+
+                    player.RegisterDamageTime(); // Start cooldown
                 }
             }
         }
